@@ -1,0 +1,6 @@
+ops
+opentelemetry-api
+pyyaml
+websocket-client
+typing-extensions
+tomlkit

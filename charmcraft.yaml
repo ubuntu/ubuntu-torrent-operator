@@ -1,0 +1,62 @@
+name: ubuntu-torrent-operator
+title: Ubuntu Torrent Operator
+summary: The operator charm behind torrent.ubuntu.com
+description: |
+  Deploys the `aquatic` torrent tracker and `transmission` torrent client for seeding.
+type: charm
+
+base: ubuntu@26.04
+platforms:
+  amd64:
+
+parts:
+  aquatic:
+    plugin: nil
+    build-packages:
+      - git
+      - cmake
+      - build-essential
+      - pkg-config
+      - libssl-dev
+      - cargo
+    override-build: |
+      # git clone https://github.com/greatest-ape/aquatic ${CRAFT_PART_SRC}/aquatic
+      [ -d ${CRAFT_PART_SRC}/aquatic ] || git clone https://github.com/YGGverse/aquatic -b glommio-010 ${CRAFT_PART_SRC}/aquatic
+      cd ${CRAFT_PART_SRC}/aquatic
+      cargo build --release -p aquatic_http
+      mkdir -p ${CRAFT_PART_INSTALL}/bin
+      cp target/release/aquatic_http ${CRAFT_PART_INSTALL}/bin/aquatic_http
+  charm:
+    plugin: python
+    source: .
+    python-requirements:
+      - requirements.txt
+
+config:
+  options:
+    protocol:
+      type: string
+      default: http
+      description: |
+        BitTorrent protocol to run. One of: udp, http, ws.
+    listen-address:
+      type: string
+      default: "0.0.0.0"
+      description: |
+        IP address to bind the tracker to.
+    listen-port:
+      type: int
+      default: 3000
+      description: |
+        Port to bind the tracker to.
+    log-level:
+      type: string
+      default: info
+      description: |
+        Log level. One of: error, warn, info, debug, trace.
+    config-toml:
+      type: string
+      default: ""
+      description: |
+        Full TOML configuration content. If set, this overrides the individual
+        config options above and is written directly as the tracker config file.
