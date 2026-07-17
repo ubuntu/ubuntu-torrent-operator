@@ -3,18 +3,16 @@ import logging
 from pathlib import Path
 from subprocess import check_call, CalledProcessError
 
-logger = logging.getLogger(__name__)
+from constants import DOWNLOAD_DIR, MAIN_USER, WATCH_DIR
 
-HOME = Path("~ubuntu").expanduser()
+logger = logging.getLogger(__name__)
 
 
 class Transmission:
     def __init__(self):
-        self._transmission_user = "debian-transmission"
-        self._download_dir = Path("/var/lib/transmission-daemon/downloads")
-        self._watch_dir = Path(
-            "/var/lib/transmission-daemon/.config/transmission-daemon/watch_dir"
-        )
+        self._user = MAIN_USER
+        self._download_dir = DOWNLOAD_DIR
+        self._watch_dir = WATCH_DIR
         self._config_path = Path("/etc/transmission-daemon/settings.json")
 
     def install(self):
@@ -49,14 +47,7 @@ class Transmission:
         logger.info("configuring transmission")
         check_call(["systemctl", "stop", "transmission-daemon.service"])
         self._watch_dir.mkdir(parents=True, exist_ok=True)
-        check_call(
-            [
-                "chown",
-                "-R",
-                f"{self._transmission_user}:{self._transmission_user}",
-                self._watch_dir,
-            ]
-        )
+        check_call(["chown", "-R", f"{self._user}:{self._user}", self._watch_dir])
         current_config = json.loads(self._config_path.read_text())
         current_config["watch-dir"] = str(self._watch_dir)
         current_config["watch-dir-enabled"] = True
