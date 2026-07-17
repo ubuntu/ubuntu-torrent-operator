@@ -4,3 +4,7 @@ __pycache__/
 .tox/
 build/
 dist/
+/access-list.txt
+/images
+/torrents
+/watch
