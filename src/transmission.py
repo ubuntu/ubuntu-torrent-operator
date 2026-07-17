@@ -10,9 +10,10 @@ HOME = Path("~ubuntu").expanduser()
 
 class Transmission:
     def __init__(self):
+        self._transmission_user = "debian-transmission"
         self._download_dir = Path("/var/lib/transmission-daemon/downloads")
-        self._torrent_dir = Path(
-            "/var/lib/transmission-daemon/.config/transmission-daemon/torrents"
+        self._watch_dir = Path(
+            "/var/lib/transmission-daemon/.config/transmission-daemon/watch_dir"
         )
         self._config_path = Path("/etc/transmission-daemon/settings.json")
 
@@ -46,11 +47,21 @@ class Transmission:
 
     def _write_configuration(self):
         logger.info("configuring transmission")
+        check_call(["systemctl", "stop", "transmission-daemon.service"])
+        self._watch_dir.mkdir(parents=True, exist_ok=True)
+        check_call(
+            [
+                "chown",
+                "-R",
+                f"{self._transmission_user}:{self._transmission_user}",
+                self._watch_dir,
+            ]
+        )
         current_config = json.loads(self._config_path.read_text())
-        current_config["watch-dir"] = str(self._torrent_dir)
+        current_config["watch-dir"] = str(self._watch_dir)
         current_config["watch-dir-enabled"] = True
         # XXX Let's have easy control for now, we'll see to restrict this later
         current_config["rpc-authentication-required"] = False
         current_config["default-trackers"] = "https://torrent.ubuntu.com"
         self._config_path.write_text(json.dumps(current_config))
-        check_call(["systemctl", "reload", "transmission.service"])
+        check_call(["systemctl", "start", "transmission-daemon.service"])
