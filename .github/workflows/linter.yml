@@ -1,0 +1,18 @@
+---
+name: Lint Code Base
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    name: Lint Code Base
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: sudo snap install ruff
+      - name: Run linter tests
+        run: |
+          ruff check --preview .

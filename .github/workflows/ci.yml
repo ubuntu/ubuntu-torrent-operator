@@ -1,0 +1,18 @@
+---
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  linter:
+    uses: ./.github/workflows/linter.yml
+  build-charm:
+    uses: ./.github/workflows/build-charm.yml
+    secrets:
+      CHARMCRAFT_TOKEN: ${{ secrets.CHARMCRAFT_TOKEN }}
