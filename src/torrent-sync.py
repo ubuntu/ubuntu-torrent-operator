@@ -3,7 +3,7 @@
 import argparse
 import logging
 from pathlib import Path
-from subprocess import check_call, CalledProcessError
+from subprocess import CalledProcessError, check_call
 
 import torf
 
@@ -126,8 +126,8 @@ def main():
                 )
                 add_torrent_to_watch_dir(args.watch_dir, torrent)
                 add_torrent_to_access_list(args.access_list, torrent)
-            except Exception as e:
-                logger.error("Failed to sync image for %s (%s)", torrent, e)
+            except Exception:
+                logger.exception("Failed to sync image for %s", torrent)
 
 
 if __name__ == "__main__":

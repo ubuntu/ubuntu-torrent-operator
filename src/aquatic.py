@@ -1,10 +1,12 @@
-from constants import ACCESS_LIST, MAIN_USER, AQUATIC_HOME
-import os
-import tomlkit
 import logging
+import os
 from pathlib import Path
-from textwrap import dedent
 from subprocess import check_call, check_output
+from textwrap import dedent
+
+import tomlkit
+
+from constants import ACCESS_LIST, AQUATIC_HOME, MAIN_USER
 
 logger = logging.getLogger(__name__)
 
