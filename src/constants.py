@@ -1,10 +1,10 @@
 from pathlib import Path
 
-DOWNLOAD_DIR = Path("/var/lib/transmission-daemon/downloads")
-TORRENTS_DIR = Path("/var/lib/transmission-daemon/torrents")
-WATCH_DIR = Path("/var/lib/transmission-daemon/.config/transmission-daemon/watch_dir")
-AQUATIC_HOME = Path("/var/lib/transmission-daemon/aquatic")
-ACCESS_LIST = AQUATIC_HOME / "access-list.txt"
-
 MAIN_USER = "debian-transmission"
-HOME = Path(f"~{MAIN_USER}").expanduser()
+HOME = Path("/var/lib/transmission-daemon")
+
+DOWNLOAD_DIR = HOME / "downloads"
+TORRENTS_DIR = HOME / "torrents"
+WATCH_DIR = HOME / ".config/transmission-daemon/watch_dir"
+AQUATIC_HOME = HOME / "aquatic"
+ACCESS_LIST = AQUATIC_HOME / "access-list.txt"

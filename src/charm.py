@@ -42,14 +42,15 @@ class TorrentCharm(CharmBase):
 
     def _on_install(self, event):
         self.unit.status = MaintenanceStatus("Installing")
-        self._aquatic.install()
+        # Install transmission first, to get $HOME created
         self._transmission.install()
+        self._aquatic.install()
         self._synchronizer.install()
         self.unit.status = ActiveStatus("Ready")
 
     def _on_config_changed(self, event):
-        self._aquatic.configure()
         self._transmission.configure()
+        self._aquatic.configure()
         self._synchronizer.configure()
         self.unit.status = ActiveStatus()
 
