@@ -1,7 +1,7 @@
 import json
 import logging
 from pathlib import Path
-from subprocess import check_call, CalledProcessError
+from subprocess import CalledProcessError, check_call
 
 from constants import DOWNLOAD_DIR, MAIN_USER, WATCH_DIR
 

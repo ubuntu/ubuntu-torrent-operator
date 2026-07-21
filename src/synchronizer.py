@@ -1,8 +1,9 @@
-from constants import DOWNLOAD_DIR, TORRENTS_DIR, WATCH_DIR, ACCESS_LIST, MAIN_USER
 import logging
 from pathlib import Path
-from subprocess import check_call, CalledProcessError
+from subprocess import CalledProcessError, check_call
 from textwrap import dedent
+
+from constants import ACCESS_LIST, DOWNLOAD_DIR, MAIN_USER, TORRENTS_DIR, WATCH_DIR
 
 logger = logging.getLogger(__name__)
 

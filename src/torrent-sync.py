@@ -3,7 +3,7 @@
 import argparse
 import logging
 from pathlib import Path
-from subprocess import check_call, CalledProcessError
+from subprocess import CalledProcessError, check_call
 
 import torf
 
