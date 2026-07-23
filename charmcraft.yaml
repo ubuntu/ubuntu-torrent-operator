@@ -32,6 +32,13 @@ parts:
     python-requirements:
       - requirements.txt
 
+storage:
+  images:
+    type: filesystem
+    description: A big directory to store image files
+    location: /var/lib/transmission-daemon/downloads
+    minimum-size: 100G
+
 config:
   options:
     protocol:
