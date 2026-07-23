@@ -20,8 +20,11 @@ parts:
       - libssl-dev
       - cargo
     override-build: |
-      # git clone https://github.com/greatest-ape/aquatic ${CRAFT_PART_SRC}/aquatic
-      [ -d ${CRAFT_PART_SRC}/aquatic ] || git clone https://github.com/YGGverse/aquatic -b glommio-010 ${CRAFT_PART_SRC}/aquatic
+      # This is the upstream repo, non functional for now
+      # [ -d ${CRAFT_PART_SRC}/aquatic ] || git clone https://github.com/greatest-ape/aquatic ${CRAFT_PART_SRC}/aquatic
+      # Let's clone that fork on its 'glommio-010' branch, that has a working fix
+      # context: https://github.com/greatest-ape/aquatic/pull/244
+      [ -d ${CRAFT_PART_SRC}/aquatic ] || git clone https://github.com/YGGverse/aquatic --revision=b788971060b627892a077818dc61fb6a18c35160 --depth=1 ${CRAFT_PART_SRC}/aquatic
       cd ${CRAFT_PART_SRC}/aquatic
       cargo build --release -p aquatic_http
       mkdir -p ${CRAFT_PART_INSTALL}/bin
