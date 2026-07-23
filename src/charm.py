@@ -52,6 +52,7 @@ class TorrentCharm(CharmBase):
         self._transmission.configure()
         self._aquatic.configure()
         self._synchronizer.configure()
+        self.unit.set_ports(self._aquatic.aquatic_port)
         self.unit.status = ActiveStatus()
 
     def _on_start(self, event):
