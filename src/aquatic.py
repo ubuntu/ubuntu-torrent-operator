@@ -32,7 +32,6 @@ class Aquatic:
         pass
 
     def configure(self):
-        check_call(["systemctl", "stop", "aquatic.service"])
         self._deploy_binary()
         self._write_systemd_service()
         self._write_configuration()
@@ -48,6 +47,8 @@ class Aquatic:
         if not self._shipped_binary.exists():
             logger.error(f"Shipped binary not found at {self._shipped_binary}")
             return
+        if self._bin_path.exists():
+            os.rename(self._bin_path, self._bin_path.with_suffix(".old"))
         self._shipped_binary.copy(self._bin_path)
         self._bin_path.chmod(0o755)
 
