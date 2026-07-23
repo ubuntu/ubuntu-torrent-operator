@@ -38,10 +38,10 @@ class Transmission:
         self._write_configuration()
 
     def start(self):
-        check_call(["systemctl", "enable", "--now", "transmission"])
+        check_call(["systemctl", "enable", "--now", "transmission-daemon.service"])
 
     def stop(self):
-        check_call(["systemctl", "disable", "--now", "transmission"])
+        check_call(["systemctl", "disable", "--now", "transmission-daemon.service"])
 
     def _write_configuration(self):
         logger.info("configuring transmission")
