@@ -31,6 +31,8 @@ class Synchronizer:
             logger.debug("Package install failed with return code %d", e.returncode)
 
     def configure(self):
+        self._torrents_dir.mkdir(parents=True, exist_ok=True)
+        check_call(["chown", "-R", f"{self._user}:{self._user}", self._torrents_dir])
         self._write_systemd_service()
         self._write_systemd_timer()
 
