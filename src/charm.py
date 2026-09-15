@@ -6,6 +6,7 @@ from ops.main import main
 from ops.model import ActiveStatus, MaintenanceStatus
 
 from aquatic import Aquatic
+from routing import Routing
 from synchronizer import Synchronizer
 from transmission import Transmission
 
@@ -18,6 +19,7 @@ class TorrentCharm(CharmBase):
 
         self._aquatic = Aquatic(self._shipped_aquatic_binary)
         self._transmission = Transmission()
+        self._routing = Routing(self)
         self._synchronizer = Synchronizer(
             self._shipped_synchronizer_script, self._shipped_venv
         )
@@ -52,6 +54,7 @@ class TorrentCharm(CharmBase):
         self._transmission.configure()
         self._aquatic.configure()
         self._synchronizer.configure()
+        self._routing.configure()
         self.unit.set_ports(self._aquatic.aquatic_port)
         self.unit.status = ActiveStatus()
 

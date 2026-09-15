@@ -35,6 +35,14 @@ parts:
     python-requirements:
       - requirements.txt
 
+requires:
+  haproxy-route:
+    interface: haproxy-route
+    limit: 1
+  haproxy-route-tcp:
+    interface: haproxy-route-tcp
+    limit: 1
+
 storage:
   images:
     type: filesystem
