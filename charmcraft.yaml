@@ -36,10 +36,10 @@ parts:
       - astral-uv
 
 requires:
-  haproxy-route:
+  tracker:
     interface: haproxy-route
     limit: 1
-  haproxy-route-tcp:
+  bittorrent:
     interface: haproxy-route-tcp
     limit: 1
 

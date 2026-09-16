@@ -6,8 +6,8 @@ from ops.charm import CharmBase
 
 from constants import (
     AQUATIC_PORT,
-    HAPROXY_ROUTE_RELATION,
-    HAPROXY_ROUTE_TCP_RELATION,
+    HAPROXY_BITTORRENT_RELATION,
+    HAPROXY_TRACKER_RELATION,
     TRANSMISSION_PEER_PORT,
 )
 
@@ -20,7 +20,7 @@ class Routing:
         self.hostname = self._charm.config.get("hostname")
         self.tracker = HaproxyRouteRequirer(
             charm,
-            relation_name=HAPROXY_ROUTE_RELATION,
+            relation_name=HAPROXY_TRACKER_RELATION,
             service="aquatic",
             ports=[AQUATIC_PORT],
             protocol="http",
@@ -28,7 +28,7 @@ class Routing:
         )
         self.torrent = HaproxyRouteTcpRequirer(
             charm,
-            relation_name=HAPROXY_ROUTE_TCP_RELATION,
+            relation_name=HAPROXY_BITTORRENT_RELATION,
             port=TRANSMISSION_PEER_PORT,
             backend_port=TRANSMISSION_PEER_PORT,
             enforce_tls=False,
