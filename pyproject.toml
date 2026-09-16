@@ -1,0 +1,13 @@
+[project]
+name = "ubuntu-torrent-operator"
+version = "0.0.1"
+requires-python = ">=3.12"
+
+# Dependencies of the charm code.
+dependencies = [
+    "ops>=3,<4",
+    "pydantic>=2.13.5",
+    "tomlkit>=0.15.1",
+    "torf>=4.3.1",
+    "validators>=0.35.0",
+]

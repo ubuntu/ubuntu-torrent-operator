@@ -30,10 +30,10 @@ parts:
       mkdir -p ${CRAFT_PART_INSTALL}/bin
       cp target/release/aquatic_http ${CRAFT_PART_INSTALL}/bin/aquatic_http
   charm:
-    plugin: python
+    plugin: uv
     source: .
-    python-requirements:
-      - requirements.txt
+    build-snaps:
+      - astral-uv
 
 requires:
   haproxy-route:
