@@ -82,6 +82,7 @@ class Aquatic:
         config = tomlkit.parse(check_output([self._bin_path, "-p"]))
         config["socket_workers"] = os.cpu_count()
         config["log_level"] = "debug"
+        config["run_index"] = True
         config["network"]["runs_behind_reverse_proxy"] = True
         config["metrics"]["run_prometheus_endpoint"] = True
         config["access_list"]["mode"] = "allow"
