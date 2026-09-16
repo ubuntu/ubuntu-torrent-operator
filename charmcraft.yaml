@@ -52,29 +52,8 @@ storage:
 
 config:
   options:
-    protocol:
+    hostname:
       type: string
-      default: http
+      default: "torrent.ubuntu.com"
       description: |
-        BitTorrent protocol to run. One of: udp, http, ws.
-    listen-address:
-      type: string
-      default: "0.0.0.0"
-      description: |
-        IP address to bind the tracker to.
-    listen-port:
-      type: int
-      default: 3000
-      description: |
-        Port to bind the tracker to.
-    log-level:
-      type: string
-      default: info
-      description: |
-        Log level. One of: error, warn, info, debug, trace.
-    config-toml:
-      type: string
-      default: ""
-      description: |
-        Full TOML configuration content. If set, this overrides the individual
-        config options above and is written directly as the tracker config file.
+        Main hostname to serve

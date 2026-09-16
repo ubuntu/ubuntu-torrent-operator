@@ -8,7 +8,6 @@ from constants import (
     AQUATIC_PORT,
     HAPROXY_ROUTE_RELATION,
     HAPROXY_ROUTE_TCP_RELATION,
-    HOSTNAME,
     TRANSMISSION_PEER_PORT,
 )
 
@@ -18,13 +17,14 @@ logger = logging.getLogger(__name__)
 class Routing:
     def __init__(self, charm: CharmBase):
         self._charm = charm
+        self.hostname = self._charm.config.get("hostname")
         self.tracker = HaproxyRouteRequirer(
             charm,
             relation_name=HAPROXY_ROUTE_RELATION,
             service="aquatic",
             ports=[AQUATIC_PORT],
             protocol="http",
-            hostname=HOSTNAME,
+            hostname=self.hostname,
         )
         self.torrent = HaproxyRouteTcpRequirer(
             charm,
@@ -40,7 +40,7 @@ class Routing:
             service="aquatic",
             ports=[AQUATIC_PORT],
             protocol="http",
-            hostname=HOSTNAME,
+            hostname=self.hostname,
         )
         self.torrent.provide_haproxy_route_tcp_requirements(
             port=TRANSMISSION_PEER_PORT,
