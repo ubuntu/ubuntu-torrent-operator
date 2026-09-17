@@ -84,6 +84,7 @@ class Aquatic:
         config["log_level"] = "debug"
         config["run_index"] = True
         config["network"]["runs_behind_reverse_proxy"] = True
+        config["network"]["reverse_proxy_ip_header_name"] = "x-forwarded-for"
         config["metrics"]["run_prometheus_endpoint"] = True
         config["access_list"]["mode"] = "allow"
         config["access_list"]["path"] = str(self._access_list)
