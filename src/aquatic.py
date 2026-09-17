@@ -94,4 +94,6 @@ class Aquatic:
 
         self._config_path.write_text(tomlkit.dumps(config))
 
+        self._access_list.touch()
+
         check_call(["chown", "-R", f"{self._user}:{self._user}", AQUATIC_HOME])
