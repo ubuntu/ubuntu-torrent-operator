@@ -125,8 +125,8 @@ def main():
                 sync_single_torrent_image(
                     source, dest_torrent_dir, args.images_dir, torrent
                 )
-                add_torrent_to_watch_dir(args.watch_dir, torrent)
                 add_torrent_to_access_list(args.access_list, torrent)
+                add_torrent_to_watch_dir(args.watch_dir, torrent)
             except Exception:
                 logger.exception("Failed to sync image for %s", torrent)
 
