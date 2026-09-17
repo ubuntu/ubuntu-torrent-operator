@@ -3,7 +3,7 @@ import logging
 from pathlib import Path
 from subprocess import CalledProcessError, check_call
 
-from constants import DOWNLOAD_DIR, MAIN_USER, WATCH_DIR
+from constants import DOWNLOAD_DIR, MAIN_USER, TRANSMISSION_PEER_PORT, WATCH_DIR
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +14,9 @@ class Transmission:
         self._download_dir = DOWNLOAD_DIR
         self._watch_dir = WATCH_DIR
         self._config_path = Path("/etc/transmission-daemon/settings.json")
+
+        # For use by caller
+        self.transmission_port = TRANSMISSION_PEER_PORT
 
     def install(self):
         self._install_deps()

@@ -6,7 +6,7 @@ from textwrap import dedent
 
 import tomlkit
 
-from constants import ACCESS_LIST, AQUATIC_HOME, MAIN_USER
+from constants import ACCESS_LIST, AQUATIC_HOME, AQUATIC_PORT, MAIN_USER
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,7 @@ class Aquatic:
 
         self._user = MAIN_USER
         # For use by caller
-        self.aquatic_port = 3000
+        self.aquatic_port = AQUATIC_PORT
 
         self._systemd_unit_path = Path("/etc/systemd/system/aquatic.service")
         self._systemd_unit_path.parent.mkdir(parents=True, exist_ok=True)
