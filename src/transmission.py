@@ -56,6 +56,18 @@ class Transmission:
         current_config["watch-dir-enabled"] = True
         # XXX Let's have easy control for now, we'll see to restrict this later
         current_config["rpc-authentication-required"] = False
+        # We can only do TCP in ProdStack
+        current_config["utp-enabled"] = False
+        current_config["dht-enabled"] = False
+        current_config["lpd-enabled"] = False
+        current_config["preferred_transports"] = ["tcp"]
+        current_config["ip_endpoints_ipv4"] = []
+        # Port forwarding is done manually, no need for Transmission to try tricks
+        current_config["port-forwarding-enabled"] = False
+        current_config["peer-port"] = 51413
+        current_config["peer-port-random-on-start"] = False
+        # Always verify added torrents, to start seeding them
+        current_config["torrent-added-verify-mode"] = "full"
         current_config["default-trackers"] = "https://torrent.ubuntu.com"
         self._config_path.write_text(json.dumps(current_config))
         check_call(["systemctl", "start", "transmission-daemon.service"])
