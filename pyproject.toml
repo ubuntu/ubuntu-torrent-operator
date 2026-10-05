@@ -11,3 +11,6 @@ dependencies = [
     "torf>=4.3.1",
     "validators>=0.35.0",
 ]
+
+[tool.ruff]
+exclude = ["lib/charms/**"]
