@@ -59,6 +59,8 @@ class Synchronizer:
                 --images-dir {self._images_dir} \
                 --watch-dir {self._watch_dir} \
                 --access-list {self._access_list}
+            # Make aquatic reload the access list
+            ExecStartPost=pkill -10 aquatic
         """)
 
         self._service_path.write_text(content)
