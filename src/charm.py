@@ -51,7 +51,7 @@ class TorrentCharm(CharmBase):
         self.unit.status = ActiveStatus("Ready")
 
     def _on_config_changed(self, event):
-        self._transmission.configure()
+        self._transmission.configure(self.config.get("hostname"))
         self._aquatic.configure()
         self._synchronizer.configure()
         self._routing.configure()

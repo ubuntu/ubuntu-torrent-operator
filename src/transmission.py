@@ -37,8 +37,8 @@ class Transmission:
             logger.debug("Package install failed with return code %d", e.returncode)
             return
 
-    def configure(self):
-        self._write_configuration()
+    def configure(self, tracker_hostname):
+        self._write_configuration(tracker_hostname)
 
     def start(self):
         check_call(["systemctl", "enable", "--now", "transmission-daemon.service"])
@@ -46,7 +46,7 @@ class Transmission:
     def stop(self):
         check_call(["systemctl", "disable", "--now", "transmission-daemon.service"])
 
-    def _write_configuration(self):
+    def _write_configuration(self, tracker_hostname):
         logger.info("configuring transmission")
         check_call(["systemctl", "stop", "transmission-daemon.service"])
         self._watch_dir.mkdir(parents=True, exist_ok=True)
@@ -68,6 +68,6 @@ class Transmission:
         current_config["peer-port-random-on-start"] = False
         # Always verify added torrents, to start seeding them
         current_config["torrent-added-verify-mode"] = "full"
-        current_config["default-trackers"] = "https://torrent.ubuntu.com"
+        current_config["default-trackers"] = f"https://{tracker_hostname}/announce"
         self._config_path.write_text(json.dumps(current_config))
         check_call(["systemctl", "start", "transmission-daemon.service"])
