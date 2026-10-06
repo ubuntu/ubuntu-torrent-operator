@@ -8,6 +8,7 @@ from ops.model import ActiveStatus, MaintenanceStatus
 from aquatic import Aquatic
 from routing import Routing
 from synchronizer import Synchronizer
+from torrent_test import TorrentTest
 from transmission import Transmission
 
 logger = logging.getLogger(__name__)
@@ -19,6 +20,7 @@ class TorrentCharm(CharmBase):
 
         self._aquatic = Aquatic(self._shipped_aquatic_binary)
         self._transmission = Transmission()
+        self._torrent_test = TorrentTest()
         self._routing = Routing(self)
         self._synchronizer = Synchronizer(
             self._shipped_synchronizer_script, self._shipped_venv
@@ -46,11 +48,14 @@ class TorrentCharm(CharmBase):
         self.unit.status = MaintenanceStatus("Installing")
         # Install transmission first, to get $HOME created
         self._transmission.install()
+        self._torrent_test.install()
         self._aquatic.install()
         self._synchronizer.install()
         self.unit.status = ActiveStatus("Ready")
 
     def _on_config_changed(self, event):
+        # Make sure the test torrent is in place before (re)starting transmission
+        self._torrent_test.configure()
         self._transmission.configure(self.config.get("hostname"))
         self._aquatic.configure()
         self._synchronizer.configure()
