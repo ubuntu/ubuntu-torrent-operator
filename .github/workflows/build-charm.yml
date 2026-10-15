@@ -44,10 +44,9 @@ jobs:
       - name: Pack charm
         run: charmcraft pack -v
 
-      # Uncomment this to run charm tests if they ever exist.
-      # - name: Run charm tests
-      #   run: |
-      #     charmcraft.spread -v charm/tests/
+      - name: Run charm tests
+        run: |
+          charmcraft.spread -v tests/
 
       - name: Upload charm artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

@@ -54,11 +54,16 @@ class TorrentCharm(CharmBase):
         self.unit.status = ActiveStatus("Ready")
 
     def _on_config_changed(self, event):
+        tracker_url = self.config.get("tracker_url", "")
         # Make sure the test torrent is in place before (re)starting transmission
-        self._torrent_test.configure()
-        self._transmission.configure(self.config.get("hostname"))
+        self._torrent_test.configure(tracker_url)
+        self._transmission.configure(
+            self.config.get("hostname"),
+            tracker_url,
+            self.config.get("announce_ip", ""),
+        )
         self._aquatic.configure()
-        self._synchronizer.configure()
+        self._synchronizer.configure(self.config.get("rsync_base"))
         self._routing.configure()
         self.unit.set_ports(
             self._aquatic.aquatic_port, self._transmission.transmission_port

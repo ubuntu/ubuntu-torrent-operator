@@ -12,5 +12,20 @@ dependencies = [
     "validators>=0.35.0",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "jubilant",
+    "pytest",
+    "requests",
+    "tenacity",
+]
+
+[tool.pytest.ini_options]
+pythonpath = [
+    "src",
+    "tests",
+    "tests/integration",
+]
+
 [tool.ruff]
 exclude = ["lib/charms/**"]

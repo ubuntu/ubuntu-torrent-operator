@@ -1,0 +1,92 @@
+project: ubuntu-torrent
+kill-timeout: 90m
+workers: 1
+
+environment:
+  CI: "$(HOST: echo $CI)"
+
+backends:
+  lxd:
+    type: adhoc
+    # This allocate block can be removed once the LXD VM support is landed in
+    # spread: https://github.com/canonical/spread/pull/185
+    allocate: |
+      CONTAINER_NAME="ubuntu-torrent-${SPREAD_SYSTEM/./-}-${RANDOM}"
+      JUJU_IMAGE="${SPREAD_SYSTEM}-juju"
+      DISK="${DISK:-30}"
+      CPU="${CPU:-4}"
+      MEM="${MEM:-4}"
+
+      # Cache the concierge setup in a custom image, so that it is only done
+      # once and later runs reuse it. The image lives on the LXD host, so it
+      # survives across spread runs. Delete it with
+      # `lxc image delete "${JUJU_IMAGE}"` to force a rebuild.
+      if ! lxc image list --format csv | grep -q "^${JUJU_IMAGE},"; then
+        BUILDER_NAME="ubuntu-torrent-${SPREAD_SYSTEM/./-}-builder-${RANDOM}"
+
+        lxc launch --vm "${SPREAD_SYSTEM/-/:}" "${BUILDER_NAME}" \
+          -c limits.cpu="${CPU}" \
+          -c limits.memory="${MEM}GiB" \
+          -d root,size="${DISK}GiB"
+
+        # Wait for the instance to be up, then for cloud-init and snapd to settle.
+        while ! lxc exec "${BUILDER_NAME}" -- true &>/dev/null; do sleep 0.5; done
+        lxc exec "${BUILDER_NAME}" -- cloud-init status --wait || true
+        lxc exec "${BUILDER_NAME}" -- snap wait system seed.loaded
+
+        lxc exec "${BUILDER_NAME}" -- snap install concierge --classic
+        lxc exec "${BUILDER_NAME}" -- concierge prepare \
+            --juju-channel=3/stable \
+            --charmcraft-channel=3.x/stable \
+            --preset machine
+
+        # Reset cloud-init so instances launched from the image re-run it and
+        # pick up the per-run `spread` user/password from the cloud-config.
+        lxc exec "${BUILDER_NAME}" -- cloud-init clean --logs
+
+        lxc stop "${BUILDER_NAME}"
+        lxc publish "${BUILDER_NAME}" --alias "${JUJU_IMAGE}"
+        lxc delete "${BUILDER_NAME}"
+      fi
+
+      lxc launch --vm -e \
+        "${JUJU_IMAGE}" \
+        "${CONTAINER_NAME}" \
+        -c user.user-data="$(sed "s|SPREAD_PASSWORD|$SPREAD_PASSWORD|g" tests/cloud-config.yaml)" \
+        -c limits.cpu="${CPU}" \
+        -c limits.memory="${MEM}GiB" \
+        -d root,size="${DISK}GiB"
+
+      # Wait for the spread user
+      while ! lxc exec "${CONTAINER_NAME}" -- id -u spread &>/dev/null; do sleep 0.5; done
+
+      # Set the instance address for spread
+      ADDRESS "$(lxc ls -f csv | grep "${CONTAINER_NAME}" | cut -d"," -f3 | cut -d" " -f1)"
+    discard: |
+      instance_name="$(lxc ls -f csv | grep -B1 -A1 $SPREAD_SYSTEM_ADDRESS | grep ubuntu-torrent | cut -f1 -d",")"
+      lxc delete -f $instance_name
+
+    systems:
+      - ubuntu-26.04:
+          username: spread
+          workers: 1
+
+suites:
+  tests/:
+    summary: Spread tests - charm tests
+    prepare: |
+      snap install astral-uv --classic
+
+exclude:
+  - .coverage
+  - .git
+  - .github
+  - .pytest_cache
+  - .ruff_cache
+  - .tox
+  - .venv
+
+# this needs to be under /root because spread executes the test scripts
+# as root, which means that all snaps can only see files in root's
+# home directory due to snap confinement.
+path: /root/proj

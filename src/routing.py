@@ -18,6 +18,7 @@ class Routing:
     def __init__(self, charm: CharmBase):
         self._charm = charm
         self.hostname = self._charm.config.get("hostname")
+        self._allow_http = self._charm.config.get("allow_http", False)
         self.tracker = HaproxyRouteRequirer(
             charm,
             relation_name=HAPROXY_TRACKER_RELATION,
@@ -25,6 +26,7 @@ class Routing:
             ports=[AQUATIC_PORT],
             protocol="http",
             hostname=self.hostname,
+            allow_http=self._allow_http,
         )
         self.torrent = HaproxyRouteTcpRequirer(
             charm,
@@ -36,11 +38,13 @@ class Routing:
         )
 
     def configure(self):
+        self._allow_http = self._charm.config.get("allow_http", False)
         self.tracker.provide_haproxy_route_requirements(
             service="aquatic",
             ports=[AQUATIC_PORT],
             protocol="http",
             hostname=self.hostname,
+            allow_http=self._allow_http,
         )
         self.torrent.provide_haproxy_route_tcp_requirements(
             port=TRANSMISSION_PEER_PORT,

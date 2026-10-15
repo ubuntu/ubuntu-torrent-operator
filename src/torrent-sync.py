@@ -43,6 +43,11 @@ def parse_args():
         type=Path,
         help="File to store the list of available torrent hashes (default: %(default)s)",
     )
+    parser.add_argument(
+        "--rsync-base",
+        default="rsync://cdimage.ubuntu.com",
+        help="Base rsync URL to sync torrents and images from (default: %(default)s)",
+    )
     return parser.parse_args()
 
 
@@ -111,13 +116,12 @@ def main():
     args = parse_args()
     setup_logging()
 
-    rsync_base = "rsync://cdimage.ubuntu.com"
     args.torrents_dir.mkdir(parents=True, exist_ok=True)
     args.images_dir.mkdir(parents=True, exist_ok=True)
     args.watch_dir.mkdir(parents=True, exist_ok=True)
 
     for subfolder in ["releases", "cdimage"]:
-        source = f"{rsync_base}/{subfolder}"
+        source = f"{args.rsync_base}/{subfolder}"
         dest_torrent_dir = args.torrents_dir / subfolder
         rsync_torrents(source, dest_torrent_dir)
         for torrent in dest_torrent_dir.rglob("*.torrent"):
