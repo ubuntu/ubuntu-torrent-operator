@@ -37,7 +37,7 @@ class Synchronizer:
         self._write_systemd_timer()
 
     def start(self):
-        check_call(["systemctl", "enable", "--now", "torrent-sync.timer"])
+        check_call(["systemctl", "enable", "--now", "torrent-sync.timer", "--no-block"])
 
     def stop(self):
         check_call(["systemctl", "disable", "--now", "torrent-sync.timer"])
