@@ -24,8 +24,8 @@ parts:
       # [ -d ${CRAFT_PART_SRC}/aquatic ] || git clone https://github.com/greatest-ape/aquatic ${CRAFT_PART_SRC}/aquatic
       # Let's clone that fork on its 'glommio-010' branch, that has a working fix
       # context: https://github.com/greatest-ape/aquatic/pull/244
-      # Actually, let's clone my own fork to have the index page feature, the glommio fix, and the BEP-7.
-      [ -d ${CRAFT_PART_SRC}/aquatic ] || git clone https://github.com/Hyask/aquatic --revision=0dbb665dec1bf78ae040176eafcb9ac747d6d8b8 --depth=1 ${CRAFT_PART_SRC}/aquatic
+      # Actually, let's clone my own fork to have the many fixes and features.
+      [ -d ${CRAFT_PART_SRC}/aquatic ] || git clone https://github.com/Hyask/aquatic --revision=02531549ad6e807b3ce1e49b5ef53d9dfd6482a0 --depth=1 ${CRAFT_PART_SRC}/aquatic
       cd ${CRAFT_PART_SRC}/aquatic
       cargo build --release -p aquatic_http
       mkdir -p ${CRAFT_PART_INSTALL}/bin
