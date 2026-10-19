@@ -64,6 +64,8 @@ class Synchronizer:
                 --rsync-base {self._rsync_base}
             # Make aquatic reload the access list
             ExecStartPost=pkill -10 aquatic
+            # Make transmission verify and reannounce its torrents
+            ExecStartPost=transmission-remote --torrent all --verify --reannounce
         """)
 
         self._service_path.write_text(content)
