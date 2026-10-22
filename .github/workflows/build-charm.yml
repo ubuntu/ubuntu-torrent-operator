@@ -6,30 +6,14 @@ on:
       CHARMCRAFT_TOKEN:
         required: true
 
+env:
+  CHARM_ARTIFACT: ubuntu-torrent-operator_amd64.charm
+
 jobs:
   pack-charm:
     name: Build charm
     runs-on: ubuntu-latest
     steps:
-      - name: Aggressive cleanup to regain disk space
-        run: |
-          # Remove Java (JDKs)
-          sudo rm -rf /usr/lib/jvm
-          # Remove .NET SDKs
-          sudo rm -rf /usr/share/dotnet
-          # Remove Swift toolchain
-          sudo rm -rf /usr/share/swift
-          # Remove Haskell (GHC)
-          sudo rm -rf /usr/local/.ghcup
-          # Remove Julia
-          sudo rm -rf /usr/local/julia*
-          # Remove Android SDKs
-          sudo rm -rf /usr/local/lib/android
-          # Remove Chromium (optional if not using for browser tests)
-          sudo rm -rf /usr/local/share/chromium
-          # Remove Microsoft/Edge and Google Chrome builds
-          sudo rm -rf /opt/microsoft /opt/google
-
       - name: Checkout
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
@@ -44,15 +28,56 @@ jobs:
       - name: Pack charm
         run: charmcraft pack -v
 
+      - name: Upload charm artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ${{ env.CHARM_ARTIFACT }}
+          path: "*.charm"
+
+  test-charm:
+    name: Test charm
+    needs: pack-charm
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+        with:
+          persist-credentials: false
+
+      - name: Setup LXD
+        uses: canonical/setup-lxd@a3c85fc6fb7fff43fcfeae87659e41a8f635b7dd
+
+      - name: Install ~~charmcraft~~spread
+        run: sudo snap install charmcraft --classic
+
+      - name: Download charm artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: ${{ env.CHARM_ARTIFACT }}
+          path: .
+
       - name: Run charm tests
         run: |
           charmcraft.spread -v tests/
 
-      - name: Upload charm artifact
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+  upload-charm:
+    name: Upload charm to charmhub
+    needs:
+      - pack-charm
+      - test-charm
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
-          name: ubuntu-release-metrics-collector.charm
-          path: "*.charm"
+          persist-credentials: false
+
+      - name: Download charm artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: ${{ env.CHARM_ARTIFACT }}
+          path: .
 
       - name: Upload charm to charmhub
         uses: canonical/charming-actions/upload-charm@1753e0803f70445132e92acd45c905aba6473225 # 2.7.0
@@ -63,4 +88,3 @@ jobs:
           github-token: '${{ secrets.GITHUB_TOKEN }}'
           tag-prefix: ubuntu-torrent-operator
           built-charm-path: ubuntu-torrent-operator_amd64.charm
-        if: github.ref == 'refs/heads/main'
