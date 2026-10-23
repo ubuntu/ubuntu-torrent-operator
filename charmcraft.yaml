@@ -4,6 +4,15 @@ summary: The operator charm behind torrent.ubuntu.com
 description: |
   Deploys the `aquatic` torrent tracker and `transmission` torrent client for seeding.
 type: charm
+links:
+  contact: Ubuntu Release Management
+  documentation: https://github.com/ubuntu/ubuntu-torrent-operator/blob/main/README.md
+  issues:
+  - https://github.com/ubuntu/ubuntu-torrent-operator/issues
+  source:
+  - https://github.com/ubuntu/ubuntu-torrent-operator
+  website:
+  - https://github.com/ubuntu/ubuntu-torrent-operator
 
 base: ubuntu@26.04
 platforms:
