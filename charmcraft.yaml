@@ -5,7 +5,7 @@ description: |
   Deploys the `aquatic` torrent tracker and `transmission` torrent client for seeding.
 type: charm
 links:
-  contact: Ubuntu Release Management
+  contact: https://launchpad.net/~ubuntu-release
   documentation: https://github.com/ubuntu/ubuntu-torrent-operator/blob/main/README.md
   issues:
   - https://github.com/ubuntu/ubuntu-torrent-operator/issues
