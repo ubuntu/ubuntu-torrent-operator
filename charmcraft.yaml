@@ -47,8 +47,8 @@ requires:
 storage:
   images:
     type: filesystem
-    description: A big directory to store image files
-    location: /var/lib/transmission-daemon/downloads
+    description: A big directory to store image files and transmission's data
+    location: /var/lib/transmission-daemon
     minimum-size: 100M
 
 config:
