@@ -19,10 +19,10 @@ class TorrentTest:
     def install(self):
         pass
 
-    def configure(self):
-        self._create_test_torrent()
+    def configure(self, tracker_url=""):
+        self._create_test_torrent(tracker_url)
 
-    def _create_test_torrent(self):
+    def _create_test_torrent(self, tracker_url=""):
         logger.info("creating test torrent")
         test_name = "ubuntu-torrent-operator-test.bin"
         test_file = self._download_dir / test_name
@@ -37,8 +37,14 @@ class TorrentTest:
             check_call(["chown", f"{self._user}:{self._user}", test_file])
 
         # Build the torrent in memory so its hash can be added to the access
-        # list before Transmission consumes it from the watch-dir.
-        torrent = torf.Torrent(path=test_file)
+        # list before Transmission consumes it from the watch-dir. The tracker
+        # is embedded (when configured) so clients fetching this torrent from
+        # the charm know where to announce; it is not part of the info
+        # dictionary, so it does not change the info hash.
+        torrent = torf.Torrent(
+            path=test_file,
+            trackers=[tracker_url] if tracker_url else None,
+        )
         torrent.generate()
         self._add_to_access_list(torrent.infohash)
 

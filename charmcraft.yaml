@@ -24,8 +24,8 @@ parts:
       # [ -d ${CRAFT_PART_SRC}/aquatic ] || git clone https://github.com/greatest-ape/aquatic ${CRAFT_PART_SRC}/aquatic
       # Let's clone that fork on its 'glommio-010' branch, that has a working fix
       # context: https://github.com/greatest-ape/aquatic/pull/244
-      # Actually, let's clone my own fork to have the index page feature, the glommio fix, and the BEP-7.
-      [ -d ${CRAFT_PART_SRC}/aquatic ] || git clone https://github.com/Hyask/aquatic --revision=0dbb665dec1bf78ae040176eafcb9ac747d6d8b8 --depth=1 ${CRAFT_PART_SRC}/aquatic
+      # Actually, let's clone my own fork to have the many fixes and features.
+      [ -d ${CRAFT_PART_SRC}/aquatic ] || git clone https://github.com/Hyask/aquatic --revision=02531549ad6e807b3ce1e49b5ef53d9dfd6482a0 --depth=1 ${CRAFT_PART_SRC}/aquatic
       cd ${CRAFT_PART_SRC}/aquatic
       cargo build --release -p aquatic_http
       mkdir -p ${CRAFT_PART_INSTALL}/bin
@@ -49,7 +49,7 @@ storage:
     type: filesystem
     description: A big directory to store image files
     location: /var/lib/transmission-daemon/downloads
-    minimum-size: 100G
+    minimum-size: 100M
 
 config:
   options:
@@ -58,3 +58,29 @@ config:
       default: "torrent.ubuntu.com"
       description: |
         Main hostname to serve
+    tracker_url:
+      type: string
+      default: ""
+      description: |
+        Announce URL used by the seeding client and embedded in the generated
+        test torrent. Leave empty to derive it from `hostname`
+        (https://<hostname>/announce).
+    announce_ip:
+      type: string
+      default: ""
+      description: |
+        Address the seeding client advertises to the tracker as its own. Set
+        this when peers are expected to reach the seeder through a proxy, for
+        example through the HAProxy `bittorrent` (haproxy-route-tcp) relation.
+    rsync_base:
+      type: string
+      default: "rsync://cdimage.ubuntu.com"
+      description: |
+        Base rsync URL the synchronizer pulls torrents and images from. The
+        `releases` and `cdimage` subpaths are appended to it.
+    allow_http:
+      type: boolean
+      default: false
+      description: |
+        Also serve the tracker over plain HTTP on the HAProxy route, in addition
+        to HTTPS.

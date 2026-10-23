@@ -19,6 +19,7 @@ class Synchronizer:
         self._images_dir = DOWNLOAD_DIR
         self._watch_dir = WATCH_DIR
         self._access_list = ACCESS_LIST
+        self._rsync_base = "rsync://cdimage.ubuntu.com"
 
     def install(self):
         self._install_deps()
@@ -30,14 +31,15 @@ class Synchronizer:
         except CalledProcessError as e:
             logger.debug("Package install failed with return code %d", e.returncode)
 
-    def configure(self):
+    def configure(self, rsync_base):
+        self._rsync_base = rsync_base
         self._torrents_dir.mkdir(parents=True, exist_ok=True)
         check_call(["chown", "-R", f"{self._user}:{self._user}", self._torrents_dir])
         self._write_systemd_service()
         self._write_systemd_timer()
 
     def start(self):
-        check_call(["systemctl", "enable", "--now", "torrent-sync.timer"])
+        check_call(["systemctl", "enable", "--now", "torrent-sync.timer", "--no-block"])
 
     def stop(self):
         check_call(["systemctl", "disable", "--now", "torrent-sync.timer"])
@@ -58,9 +60,12 @@ class Synchronizer:
                 --torrents-dir {self._torrents_dir} \
                 --images-dir {self._images_dir} \
                 --watch-dir {self._watch_dir} \
-                --access-list {self._access_list}
+                --access-list {self._access_list} \
+                --rsync-base {self._rsync_base}
             # Make aquatic reload the access list
             ExecStartPost=pkill -10 aquatic
+            # Make transmission verify and reannounce its torrents
+            ExecStartPost=transmission-remote --torrent all --verify --reannounce
         """)
 
         self._service_path.write_text(content)

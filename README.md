@@ -42,6 +42,40 @@ The charm orchestrates three sub-components:
 | `src/torrent-sync.py` | Script that downloads torrents and ISOs |
 | `src/constants.py` | Shared paths and user constants |
 
+## Testing
+
+Integration tests live in `tests/integration/` and are run against a real
+Juju model (they deploy the charm, `haproxy`, `self-signed-certificates` and a
+bare `ubuntu` unit, and relate them). They check, in order, that:
+
+1. the charm deploys and all of its components come online;
+2. the HAProxy relations work (the `tracker` HTTP route and the `bittorrent`
+   TCP route);
+3. a local aria2 client downloads the test torrent the charm generates,
+   end to end through HAProxy;
+4. a torrent served by a bare `ubuntu` unit acting as a fake
+   `cdimage.ubuntu.com` is synced by the charm and downloaded by a regular
+   torrent client too.
+
+Run them with:
+
+```
+uv run --all-extras pytest tests/integration -vv --log-level=INFO -o log_cli=1
+```
+
+Pass `--charm-path=/path/to/ubuntu-torrent-operator_amd64.charm` to test a
+pre-built charm instead of packing one from source.
+
+The tests rely on a few config options that are primarily useful outside of
+production:
+
+| Option | Purpose |
+|---|---|
+| `tracker_url` | Announce URL used by the seeding client and embedded in the generated test torrent (defaults to `https://<hostname>/announce`). |
+| `announce_ip` | Address the seeder advertises to the tracker as its own, so peers reach it through a proxy (e.g. the HAProxy `bittorrent` relation). |
+| `allow_http` | Also serve the tracker over plain HTTP on the HAProxy route, in addition to HTTPS. |
+| `rsync_base` | Base rsync URL the synchronizer pulls torrents and images from (defaults to `rsync://cdimage.ubuntu.com`). |
+
 ## Github Actions and Charmhub
 
 The charm is automatically built and published by the CI.
