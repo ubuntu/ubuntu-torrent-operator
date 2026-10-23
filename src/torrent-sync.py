@@ -69,9 +69,7 @@ def rsync_torrents(source: str, torrent_dir: Path):
                 "--archive",
                 "--prune-empty-dirs",
                 "--include=*/",
-                # "--include=*.torrent",  # XXX restore me
-                "--include=*mini-iso*.torrent",  # XXX remove me
-                "--include=xubuntu*.torrent",
+                "--include=*.torrent",
                 "--exclude=*",
                 source,
                 f"{torrent_dir}/",
