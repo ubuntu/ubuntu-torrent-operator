@@ -187,10 +187,10 @@ def open_peer(host, port, timeout):
         s = socket.create_connection((host, port), timeout=timeout)
         s.settimeout(timeout)
         return s, "direct"
-    except OSError as direct_err:
+    except OSError:
         proxy = _provider_proxy()
         if not proxy:
-            raise direct_err
+            raise
         s = _proxy_connect(proxy, host, port, timeout)
         return s, "proxy"
 
@@ -352,7 +352,7 @@ def resolve_metadata(magnet, timeout):
             print(f"      -> {len(peers)} peer(s)")
             for host, port in peers:
                 add(host, port)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             print(f"      !! {e}")
 
     if not candidates:
@@ -370,7 +370,7 @@ def resolve_metadata(magnet, timeout):
                 sock.close()
             print(f"      peer {label} ({via}) -> metadata OK")
             return info, label
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             print(f"      peer {label} -> {e}")
     return None
 
@@ -379,7 +379,7 @@ def process(source, timeout):
     print(f"\n=== {source} ===")
     try:
         text = read_source(source, timeout)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(f"  !! could not read source: {e}")
         return
     magnets = find_magnets(text.decode("utf-8", "replace"))

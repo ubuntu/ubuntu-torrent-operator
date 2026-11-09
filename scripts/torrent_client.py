@@ -185,7 +185,7 @@ def download(info, sock):
         parent = os.path.dirname(path)
         if parent:
             os.makedirs(parent, exist_ok=True)
-        bounds.append((open(path, "wb"), off, off + length))
+        bounds.append((open(path, "wb"), off, off + length))  # noqa: SIM115
         off += length
 
     def write_at(pos, data):
@@ -207,9 +207,9 @@ def download(info, sock):
         size = min(piece_len, total - p * piece_len)
         data = get_piece(sock, p, size)
         if hashlib.sha1(data).digest() != hashes[p * 20 : (p + 1) * 20]:
-            raise RuntimeError("piece %d failed hash" % p)
+            raise RuntimeError(f"piece {p} failed hash")
         write_at(p * piece_len, data)
-        print("piece %d/%d ok (%d bytes)" % (p + 1, npieces, size), flush=True)
+        print(f"piece {p + 1}/{npieces} ok ({size} bytes)", flush=True)
     for fh, _, _ in bounds:
         fh.close()
 
@@ -226,7 +226,7 @@ def main():
     candidates = [(HOST, PORT)]
     try:
         candidates += announce()
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(f"tracker failed: {e}")
     last = None
     print(f"list of candidates: {candidates}")
@@ -243,10 +243,10 @@ def main():
             download(info, s)
             s.close()
             print("done")
-            # return
-        except Exception as e:
+            return
+        except Exception as e:  # noqa: BLE001
             last = e
-            print("failed %s:%d: %s" % (host, port, e))
+            print(f"failed {host}:{port}: {e}")
     print(f"all peers failed: {last}")
     sys.exit(1)
 
